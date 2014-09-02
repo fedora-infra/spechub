@@ -21,8 +21,10 @@
 
         <!-- HEADER -->
         <div id="header">
-          <img src="{{ url_for('static', filename='spechub-logo.png') }}"
-            alt="progit Logo" id="SpecHub Logo"/>
+          <a href="{{url_for('index')}}">
+            <img src="{{ url_for('static', filename='spechub-logo.png') }}"
+              alt="progit Logo" id="SpecHub Logo"/>
+          </a>
           <form action="{{url_for('search')}}" id="headerSearch" method="GET">
             <input type="text" name="term"/>
             <input type="submit" value="Search"/>
@@ -31,6 +33,7 @@
 
         <!-- MAIN NAVIGATION -->
         <div id="mainNav">
+<!--
           <h4 class="hide">Main Site Links:</h4>
           <ul>
             <li id="homeTab"><a href="{{url_for('index')}}">Home</a></li>
@@ -40,13 +43,13 @@
             </li>
             {% endif %}
           </ul>
+-->
         </div><!-- end mainNav -->
 
         <span id="loginInfo">
           {% if g.fas_user %}
             <span class="text">logged in as </span>
-            <a href="{{ url_for('user_settings') }}">
-                {{ g.fas_user.username }}</a> |
+                {{ g.fas_user.username }} |
             <a href="{{ url_for('auth_logout') }}?next={{request.url}}">log out</a>
           {% else %}
         <a href="{{ url_for('auth_login') }}?next={{request.url}}">login</a>
