@@ -1,0 +1,29 @@
+{% extends "repo_master.html" %}
+
+{% block title %}Forks - {{ repo.name }}{% endblock %}
+{%block tag %}home{% endblock %}
+
+
+{% block repo %}
+
+<h2>Forks</h2>
+
+<section class="forks_list">
+  {% if forks %}
+  <ul>
+    {% for fork in forks %}
+    <li>
+      <a href="{{ url_for('view_repo', username=fork.user.user,
+                  repo=fork.name) }}"> {{ fork.user.user }}/{{ fork.name }} </a>
+      <span> Created on {{ fork.date_created.strftime('%Y-%m-%d %H:%M') }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>
+    This project has not been forked.
+  </p>
+  {% endif %}
+</section>
+
+{% endblock %}
