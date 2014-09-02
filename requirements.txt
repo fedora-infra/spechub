@@ -1,0 +1,17 @@
+# Used for when working from a virtualenv.
+# Use this file by running "$ pip install -r requirements.txt"
+alembic
+arrow
+docutils
+flask
+flask-wtf
+markdown
+pygit2 >= 0.20.1
+pygments
+python-fedora
+python-openid
+python-openid-cla
+python-openid-teams
+sqlalchemy >= 0.8
+straight.plugin==1.4.0-post-1
+wtforms
