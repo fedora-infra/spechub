@@ -109,6 +109,7 @@ def view_repo(repo, username=None):
         last_commits=last_commits,
         tree=tree,
         diff_commits=diff_commits,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
@@ -183,6 +184,7 @@ def view_repo_branch(repo, branchname, username=None):
         last_commits=last_commits,
         tree=sorted(last_commits[0].tree, key=lambda x: x.filemode),
         diff_commits=diff_commits,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
@@ -278,6 +280,7 @@ def view_log(repo, branchname='master', username=None):
         diff_commits=diff_commits,
         page=page,
         total_page=total_page,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
@@ -338,6 +341,7 @@ def view_file(repo, identifier, filename, username=None):
         filename=filename,
         content=content,
         output_type=output_type,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
@@ -387,6 +391,7 @@ def view_commit(repo, commitid, username=None):
         commit=commit,
         diff=diff,
         html_diff=html_diff,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
@@ -437,6 +442,7 @@ def view_tree(repo, identifier=None, username=None):
         filename='',
         content=content,
         output_type=output_type,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
 
 
