@@ -327,10 +327,15 @@ def merge_request_pull(repo, requestid, username=None):
 def fork_project(repo, username=None):
     """ Fork the project specified into the user's namespace
     """
-    repo = spechub.lib.get_project(SESSION, repo, user=username)
+    reponame = os.path.join(APP.config['GIT_FOLDER'], repo + '.git')
+    if username:
+        reponame = os.path.join(
+            APP.config['FORK_FOLDER'], username, repo + '.git')
 
-    if repo is None:
-        flask.abort(404)
+    if not os.path.exists(reponame):
+        flask.abort(404, 'Project not found')
+
+    repo_obj = pygit2.Repository(reponame)
 
     try:
         message = spechub.lib.fork_project(
@@ -338,18 +343,16 @@ def fork_project(repo, username=None):
             repo=repo,
             gitfolder=APP.config['GIT_FOLDER'],
             forkfolder=APP.config['FORK_FOLDER'],
-            docfolder=APP.config['DOCS_FOLDER'],
-            ticketfolder=APP.config['TICKETS_FOLDER'],
             user=flask.g.fas_user.username)
 
         SESSION.commit()
-        generate_gitolite_acls()
+        #generate_gitolite_acls()
         flask.flash(message)
         return flask.redirect(
             flask.url_for(
                 'view_repo',
                 username=flask.g.fas_user.username,
-                repo=repo.name)
+                repo=repo)
         )
     except spechub.exceptions.SpecHubException, err:
         flask.flash(str(err), 'error')
@@ -357,7 +360,7 @@ def fork_project(repo, username=None):
         SESSION.rollback()
         flask.flash(str(err), 'error')
 
-    return flask.redirect(flask.url_for('view_repo', repo=repo.name))
+    return flask.redirect(flask.url_for('view_repo', repo=repo))
 
 
 @APP.route('/<repo>/request-pull/new',
