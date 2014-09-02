@@ -322,7 +322,6 @@ def merge_request_pull(repo, requestid, username=None):
 
 
 @APP.route('/do_fork/<repo>')
-@APP.route('/do_fork/<username>/<repo>')
 @cla_required
 def fork_project(repo, username=None):
     """ Fork the project specified into the user's namespace
