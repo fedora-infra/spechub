@@ -167,12 +167,12 @@ class PullRequest(BASE):
     project_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(
-            'projects.id', ondelete='CASCADE', onupdate='CASCADE'),
+            'forks.id', ondelete='CASCADE', onupdate='CASCADE'),
         nullable=False)
     project_id_from = sa.Column(
         sa.Integer,
         sa.ForeignKey(
-            'projects.id', ondelete='CASCADE', onupdate='CASCADE'),
+            'forks.id', ondelete='CASCADE', onupdate='CASCADE'),
         nullable=False)
     title = sa.Column(
         sa.Text,
@@ -194,10 +194,10 @@ class PullRequest(BASE):
                              default=datetime.datetime.utcnow)
 
     repo = relation(
-        'Project', foreign_keys=[project_id], remote_side=[Project.id],
+        'Fork', foreign_keys=[project_id], remote_side=[Fork.id],
         backref='requests')
     repo_from = relation(
-        'Project', foreign_keys=[project_id_from], remote_side=[Project.id])
+        'Fork', foreign_keys=[project_id_from], remote_side=[Fork.id])
 
     def __repr__(self):
         return 'PullRequest(%s, project:%s, user:%s, title:%s)' % (
