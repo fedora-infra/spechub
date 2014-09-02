@@ -98,16 +98,23 @@ class StatusPullRequest(BASE):
     status = sa.Column(sa.Text, nullable=False, unique=True)
 
 
-class Project(BASE):
+class Fork(BASE):
     """ Stores the projects.
 
-    Table -- projects
+    Table -- forks
     """
 
-    __tablename__ = 'projects'
+    __tablename__ = 'forks'
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(32), nullable=False, index=True)
+    user_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey('users.id', onupdate='CASCADE'),
+        nullable=False,
+        index=True)
+    user = relation('User', foreign_keys=[user_id],
+                    remote_side=[User.id], backref='forks')
 
     date_created = sa.Column(sa.DateTime, nullable=False,
                              default=datetime.datetime.utcnow)
