@@ -254,8 +254,9 @@ class PullRequestComment(BASE):
     date_created = sa.Column(sa.DateTime, nullable=False,
                              default=datetime.datetime.utcnow)
 
-    user = relation('User', foreign_keys=[user_id],
-                    remote_side=[User.id], backref='pull_request_comments')
+    user = relation(
+        'User', foreign_keys=[user_id], remote_side=[User.id],
+        backref='pull_request_comments')
     pull_request = relation(
-        'PullRequest', foreign_keys=[pull_request_id], remote_side=[PullRequest.id],
-        backref='comments')
+        'PullRequest', foreign_keys=[pull_request_id],
+        remote_side=[PullRequest.id], backref='comments')
