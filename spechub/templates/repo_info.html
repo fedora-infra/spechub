@@ -1,0 +1,166 @@
+{% extends "repo_master.html" %}
+
+{% block title %}{{ select.capitalize() }} - {{ repo }}{% endblock %}
+{%block tag %}home{% endblock %}
+
+
+{% block repo %}
+
+{% if repo_obj and repo_obj.is_empty %}
+
+  <section class="repo_info">
+    <p>This repo is brand new!</p>
+
+    <p>If you already have a git repo:</p>
+    <pre>
+      git remote add origin {{ config.get('GIT_URL_SSH') }}:{% if repo.parent %}forks/{% endif %}{{ repo.fullname }}.git
+      git push -u origin master
+    </pre>
+
+    <p>If you have no create your git repo yet:</p>
+    <pre>
+      git clone {{ config.get('GIT_URL_SSH') }}:{% if repo.parent %}forks/{% endif %}{{ repo.fullname }}.git
+      cd {{ repo }}
+      touch README.rst
+      git add README.rst
+      git commit -m "Add README file"
+      git push -u origin master
+    </pre>
+
+    </section>
+
+{% else %}
+  <section class="branch_list">
+    <h3>Branches</h3>
+    <ul>
+      {% for branch in branches %}
+      <li>
+        <a href="{{ url_for('view_repo_branch',
+                    username=username, repo=repo, branchname=branch) }}">
+          {{ branch }}
+        </a>
+        (<a href="{{ url_for('view_log', username=username,
+                   repo=repo, branchname=branch) }}">logs</a>)
+
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if total_page %}
+  <table>
+    <tr>
+      <td>
+      {% if page > 1%}
+          <a href="{{ url_for('.%s' % origin, username=username,
+                    repo=repo) }}?page={{page - 1}}">
+            &lt; Previous
+        </a>
+      {% else %}
+          &lt; Previous
+      {% endif %}
+      </td>
+      <td>{{ page }} / {{ total_page }}</td>
+      <td>
+        {% if page < total_page %}
+        <a href="{{ url_for('.%s' % origin, username=username,
+                    repo=repo) }}?page={{page + 1}}">
+            Next &gt;
+        </a>
+        {% else %}
+        Next >
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+  {% endif %}
+
+  {% if tree %}
+    <section class="tree_list">
+      <h3>Current tree</h3>
+      <ul>
+        {% for entry in tree %}
+        <li>
+          {% if entry.filemode == 16384 %}
+          [ ]
+          {% endif %}
+            <a href="{{ url_for('view_file', username=username,
+                      repo=repo, identifier=branchname, filename=entry.name) }}">
+              {{ entry.name }}
+            </a>
+          {{ entry.hex }}
+          {{ entry.id }}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <section class="commit_list">
+    {% if origin == 'view_log' or origin == 'view_fork_log' %}
+    <h3>Commits list</h3>
+    {% else %}
+    <h3>Last 10 commits</h3>
+    {% endif %}
+    {% if diff_commits and authenticated %}
+    <span id="request_pull">
+        {% if branchname %}
+        <a href="{{ url_for('new_request_pull',
+                    username=username, repo=repo,
+                    branch=branchname) }}">Request pull</a>
+        {% else %}
+            <a href="{{ url_for('new_request_pull',
+                    username=username, repo=repo) }}">Request pull</a>
+        {% endif %}
+    </span>
+    {% endif %}
+    <ul>
+      {% for commit in last_commits %}
+      <li>
+        <a href="{{ url_for('view_commit', username=username,
+                repo=repo, commitid=commit.hex) }}">
+          {{ commit.hex[:6] }}
+        </a>
+        {{ commit.message.split('\n')[0] }}
+        {% if diff_commits and commit.oid.hex in diff_commits %}
+        <span class="error" title="Commit not in the main repo">*</span>
+        {% if authenticated %}
+        (<a href="{{ url_for('new_request_pull',
+                    username=username, repo=repo, commitid=commit.oid.hex) }}"
+                >Request pull</a>)
+        {% endif %}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if readme %}
+  <section class="readme">
+    {{ readme }}
+  </section>
+  {% endif %}
+
+  <section class="git_links">
+    <table>
+      <tr>
+        <th>Git URLs</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Project</td>
+        <td>:</td>
+        <td>
+          {{ config.get('GIT_URL_SSH') }}:{% if repo.parent %}forks/{% endif %}{{ repo.fullname }}.git
+        </td>
+        <td>
+          {{ config.get('GIT_URL_GIT') }}/{% if repo.parent %}forks/{% endif %}{{ repo.fullname }}.git
+        </td>
+      </tr>
+    </table>
+  </section>
+{% endif %}
+
+{% endblock %}

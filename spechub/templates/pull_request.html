@@ -1,0 +1,153 @@
+{% extends "repo_master.html" %}
+{% from "_formhelper.html" import render_field_in_row %}
+
+{% block title %}Pull request #{{ requestid }} - {{ repo }}{% endblock %}
+{%block tag %}home{% endblock %}
+
+
+{% block repo %}
+
+<h2>Request pull
+  <a href="{{ url_for('view_repo', username=username, repo=repo)}}">
+    {{ repo }}
+  </a>
+
+  (<a href="{{ url_for('view_tree', username=username,
+               repo=repo, identifier=commitid) }}"
+    >tree</a>)
+
+</h2>
+
+{% if request %}
+<h3>Title: {{ request.title }}</h3>
+  {% if request.status and repo_admin %}
+  <span>
+    <a href="{{ url_for('merge_request_pull', username=username,
+              repo=repo, requestid=requestid) }}" class="message">
+      Merge
+    </a>
+  </span>
+  {% elif request and request.status == False %}
+  <span class="error">Merged</span>
+  {% endif %}
+{% endif %}
+
+<section class="commit_list">
+  <ul>
+    {% for commit in diff_commits %}
+    <li>
+      <a href="{{ url_for('view_commit', username=username,
+                  repo=repo, commitid=commit.oid.hex)}}">
+        {{ commit.message.split('\n')[0] }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% if form %}
+<section class="new_project">
+  <form action="{{ url_for('.new_request_pull', username=username,
+    repo=repo, commitid=commitid) }}" method="post">
+    <table>
+      {{ render_field_in_row(form.title) }}
+    </table>
+    <p class="buttons indent">
+      <input type="submit" class="submit positive button" value="Create">
+      <input type="button" value="Cancel" class="button" onclick="history.back();">
+      {{ form.csrf_token }}
+    </p>
+  </form>
+</section>
+{% endif %}
+
+<section class="request_diff">
+  <h3>Diff:</h3>
+  {% for html_diff in html_diffs %}
+    <h3>Commit: {{ diff_commits[loop.index - 1].oid.hex }}</h3>
+
+    <table>
+      <tr>
+        <td>Author</td>
+        <td>
+          {{ diff_commits[loop.index - 1].author.name }} {{ '<' + diff_commits[loop.index - 1].author.email + '>' }}
+          - {{ diff_commits[loop.index - 1].commit_time | format_ts }}
+        </td>
+      </tr>
+      <tr>
+        <td>Committer</td>
+        <td>
+          {{ diff_commits[loop.index - 1].committer.name }} {{ '<' + diff_commits[loop.index - 1].committer.email + '>' }}
+          - {{ diff_commits[loop.index - 1].commit_time | format_ts }}
+        </td>
+      </tr>
+      <tr>
+        <td>Parent</td>
+        <td>
+          {% for parent in diff_commits[loop.index - 1].parents %}
+            <a href="{{ url_for('view_commit', username=username,
+                      repo=repo, commitid=parent.oid.hex) }}">
+
+            {{ parent.oid.hex }}
+          </a> <br />
+          {% endfor %}
+        </td>
+      </tr>
+    </table>
+    <p>
+    {{ diff_commits[loop.index - 1].message }}
+    </p>
+    {% autoescape false %}
+        {{ html_diff | format_loc(diff_commits[loop.index - 1], request) }}
+    {% endautoescape %}
+  {% endfor %}
+</section>
+
+
+{% endblock %}
+
+{% block jscripts %}
+{{ super() }}
+<script type="text/javascript">
+  function comment() {
+    $( ".cancel" ).click(
+      function() {
+        $(this).parent().parent().parent().parent().remove();
+      }
+    );
+  };
+
+ $(function(){
+  $( "tr" ).hover(
+    function() {
+      $( this ).find( "img" ).show().width(13);
+    }, function() {
+      $( this ).find( "img" ).hide();
+    }
+  );
+
+  $( ".prc" ).click(
+    function() {
+      var row = $( this ).attr('data-row');
+      var commit = $( this ).attr('data-commit');
+      var url = "{{ url_for(
+        'pull_request_add_comment', username=username, repo=repo,
+        requestid=requestid, commit='', row='') }}".slice(0, -1);
+      url = url + commit + '/' + row;
+      var table = $( this ).parent().parent();
+      var next_row = table.find('#' + (+row + 1)).parent().parent();
+      if (next_row.prev().find('.pr_comment_form').length == 0){
+        $.get( url , function( data ) {
+          next_row.before(
+            '<tr><td></td><td colspan="2" class="pr_comment_form">' + data + '</td></tr>' );
+          comment();
+        });
+      } else {
+          next_row.prev().find('.pr_comment_form').parent().remove();
+      }
+    }
+  );
+
+ });
+</script>
+{% endblock %}
