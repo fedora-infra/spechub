@@ -451,7 +451,10 @@ def view_tree(repo, identifier=None, username=None):
 def view_forks(repo, username=None):
     """ Presents all the forks of the project.
     """
-    repo = progit.lib.get_project(SESSION, repo, user=username)
+    reponame = os.path.join(APP.config['GIT_FOLDER'], repo + '.git')
+    if username:
+        reponame = os.path.join(
+            APP.config['FORK_FOLDER'], username, repo + '.git')
 
     if not repo:
         flask.abort(404, 'Project not found')
@@ -461,4 +464,5 @@ def view_forks(repo, username=None):
         select='forks',
         username=username,
         repo=repo,
+        forks=spechub.lib.get_forks(SESSION, repo),
     )
