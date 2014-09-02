@@ -42,16 +42,16 @@
         </a>
       </li>
 
-      {% if repo.forks %}
+      {% if forks %}
       <li {% if select == 'forks' %}class="selected" {% endif %}>
         <a href="{{ url_for('view_forks', username=username, repo=repo) }}">
-            Forks ({{ repo.forks |length }})</a>
+            Forks ({{ forks |length }})</a>
       </li>
       {% endif %}
 
     </ul>
     <ul class="right">
-      {% if g.fas_user and g.fas_user.username != repo.user.user %}
+      {% if g.fas_user and g.fas_user.username != username %}
       <li {% if select == '' %}class="selected" {% endif %}>
         <a href="{{ url_for('fork_project', repo=repo, username=username) }}">
         Fork</a>
