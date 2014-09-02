@@ -104,35 +104,26 @@ def new_pull_request(
     return 'Request created'
 
 
-def fork_project(session, user, repo, gitfolder,
-                 forkfolder, docfolder,ticketfolder):
+def fork_project(session, user, repo, gitfolder, forkfolder):
     ''' Fork a given project into the user's forks. '''
-    if repo.is_fork:
-        reponame = os.path.join(forkfolder, repo.path)
-    else:
-        reponame = os.path.join(gitfolder, repo.path)
-    forkreponame = '%s.git' % os.path.join(forkfolder, user, repo.name)
 
-    if repo.user.user == user:
-        raise spechub.exceptions.RepoExistsException(
-            'You may not fork your own repo')
+    reponame = os.path.join(gitfolder, repo + '.git')
+    forkreponame = '%s.git' % os.path.join(forkfolder, user, repo)
 
     if os.path.exists(forkreponame):
         raise spechub.exceptions.RepoExistsException(
-            'Repo "%s/%s" already exists' % (user, repo.name))
+            'Repo "%s/%s" already exists' % (user, repo))
 
-    user_obj = get_user(session, user)
-
-    if not user_obj:
+    if not user:
         raise spechub.exceptions.SpecHubException(
             'No user "%s" found' % user
         )
 
-    project = model.Project(
-        name=repo.name,
-        description=repo.description,
-        user_id=user_obj.id,
-        parent_id=repo.id
+    user = model.User.get_or_create(session, user)
+
+    project = model.Fork(
+        name=repo,
+        user=user,
     )
     session.add(project)
     # Make sure we won't have SQLAlchemy error before we create the repo
@@ -140,21 +131,7 @@ def fork_project(session, user, repo, gitfolder,
 
     pygit2.clone_repository(reponame, forkreponame, bare=True)
 
-    gitrepo = os.path.join(docfolder, project.path)
-    if os.path.exists(gitrepo):
-        raise spechub.exceptions.RepoExistsException(
-            'The docs "%s" already exists' % project.path
-        )
-    pygit2.init_repository(gitrepo, bare=True)
-
-    gitrepo = os.path.join(ticketfolder, project.path)
-    if os.path.exists(gitrepo):
-        raise spechub.exceptions.RepoExistsException(
-            'The tickets repo "%s" already exists' % project.path
-        )
-    pygit2.init_repository(gitrepo, bare=True)
-
-    return 'Repo "%s" cloned to "%s/%s"' % (repo.name, user, repo.name)
+    return 'Repo "%s" cloned to "%s/%s"' % (repo, user, repo)
 
 
 def get_pull_requests(
