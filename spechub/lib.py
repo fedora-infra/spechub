@@ -208,3 +208,18 @@ def close_pull_request(session, request):
     request.status = False
     session.add(request)
     session.flush()
+
+
+def get_forks(session, project):
+    ''' Retrieve the forks of a project
+    '''
+
+    query = session.query(
+        model.Fork
+    ).filter(
+        model.Fork.name == project
+    ).order_by(
+        model.Fork.date_created
+    )
+
+    return query.all()
