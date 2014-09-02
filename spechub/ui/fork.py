@@ -58,6 +58,7 @@ def request_pulls(repo, username=None):
         username=username,
         requests=requests,
         status=status,
+        forks=spechub.lib.get_forks(SESSION, repo, user=username),
     )
 
 
