@@ -210,7 +210,7 @@ def close_pull_request(session, request):
     session.flush()
 
 
-def get_forks(session, project):
+def get_forks(session, project, user=None):
     ''' Retrieve the forks of a project
     '''
 
@@ -221,5 +221,12 @@ def get_forks(session, project):
     ).order_by(
         model.Fork.date_created
     )
+
+    if user:
+        query = query.filter(
+            model.Fork.user_id == model.User.id
+        ).filter(
+            model.User.user == None
+        )
 
     return query.all()
