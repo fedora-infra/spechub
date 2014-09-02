@@ -98,6 +98,27 @@ class StatusPullRequest(BASE):
     status = sa.Column(sa.Text, nullable=False, unique=True)
 
 
+class User(BASE):
+    """ Stores information about users.
+
+    Table -- users
+    """
+
+    __tablename__ = 'users'
+    id = sa.Column(sa.Integer, primary_key=True)
+    user = sa.Column(sa.String(32), nullable=False, unique=True, index=True)
+
+    @classmethod
+    def get_or_create(cls, session, username):
+        """ Get or create a User object with the specified username. """
+        user = session.query(cls).filter(cls.user == username).first()
+        if not user:
+            user = User(user=username)
+            session.add(user)
+            session.commit()
+        return user
+
+
 class Fork(BASE):
     """ Stores the projects.
 
@@ -144,17 +165,6 @@ class Fork(BASE):
         return str_name
 
 
-class User(BASE):
-    """ Stores information about users.
-
-    Table -- users
-    """
-
-    __tablename__ = 'users'
-    id = sa.Column(sa.Integer, primary_key=True)
-    user = sa.Column(sa.String(32), nullable=False, unique=True, index=True)
-
-
 class PullRequest(BASE):
     """ Stores the pull requests created on a project.
 
@@ -198,6 +208,8 @@ class PullRequest(BASE):
         backref='requests')
     repo_from = relation(
         'Fork', foreign_keys=[project_id_from], remote_side=[Fork.id])
+    user = relation('User', foreign_keys=[user_id],
+                    remote_side=[User.id], backref='pull_requests')
 
     def __repr__(self):
         return 'PullRequest(%s, project:%s, user:%s, title:%s)' % (
