@@ -163,41 +163,21 @@ def get_pull_requests(
     return query.all()
 
 
-def get_pull_request(
-        session, requestid, project_id=None, project_id_from=None):
+def get_pull_request(session, requestid, project=None):
     ''' Retrieve the specified issue
     '''
-
-    subquery = session.query(
-        model.GlobalId,
-        sqlalchemy.over(
-            sqlalchemy.func.row_number(),
-            partition_by=model.GlobalId.project_id,
-            order_by=model.GlobalId.id
-        ).label('global_id')
-    ).subquery()
 
     query = session.query(
         model.PullRequest
     ).filter(
-        subquery.c.project_id == model.PullRequest.project_id
+        model.PullRequest.project_id == model.Fork.id
     ).filter(
-        subquery.c.request_id == model.PullRequest.id
+        model.PullRequest.id == requestid
     ).filter(
-        subquery.c.global_id == requestid
+        model.Fork.name == project
     ).order_by(
         model.PullRequest.id
     )
-
-    if project_id:
-        query = query.filter(
-            model.PullRequest.project_id == project_id
-        )
-
-    if project_id_from:
-        query = query.filter(
-            model.PullRequest.project_id_from == project_id_from
-        )
 
     return query.first()
 
