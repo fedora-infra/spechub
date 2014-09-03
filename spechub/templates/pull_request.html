@@ -119,9 +119,20 @@
 {% endblock %}
 
 {% block jscripts %}
-{% if requestid %}
 {{ super() }}
+
 <script type="text/javascript">
+ $(function(){
+  $( "#branch_select" ).change(
+    function() {
+      var url = $(location).attr('href').split('?branch')[0];
+      var sel = $('#branch_select');
+      window.location.href = url + '?branch=' + sel.val();
+    }
+  );
+ });
+
+{% if requestid %}
   function comment() {
     $( ".cancel" ).click(
       function() {
@@ -162,6 +173,6 @@
   );
 
  });
-</script>
 {% endif %}
+</script>
 {% endblock %}
