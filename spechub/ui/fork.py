@@ -79,7 +79,7 @@ def request_pull(repo, requestid, username=None):
 
     reponame = os.path.join(APP.config['FORK_FOLDER'], project.path)
 
-    if not repo:
+    if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
     repo_obj = pygit2.Repository(reponame)
