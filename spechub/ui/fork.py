@@ -70,26 +70,26 @@ def request_pull(repo, requestid, username=None):
     """ Request pulling the changes from the fork into the project.
     """
 
-    reponame = os.path.join(APP.config['GIT_FOLDER'], repo + '.git')
-    if username:
-        reponame = os.path.join(
-            APP.config['FORK_FOLDER'], username, repo + '.git')
-
-    if not repo:
-        flask.abort(404, 'Project not found')
-
     request = spechub.lib.get_pull_request(
         SESSION, project=repo, requestid=requestid)
+    project = request.repo_from
 
     if not request:
         flask.abort(404, 'Pull-request not found')
 
+    reponame = os.path.join(APP.config['FORK_FOLDER'], project.path)
+
+    if not repo:
+        flask.abort(404, 'Project not found')
+
     repo_obj = pygit2.Repository(reponame)
 
-    if repo.parent:
-        parentname = os.path.join(APP.config['GIT_FOLDER'], repo.parent.path)
+    if project.parent:
+        parentname = os.path.join(
+            APP.config['GIT_FOLDER'], project.parent.path)
     else:
-        parentname = os.path.join(APP.config['GIT_FOLDER'], repo.path)
+        parentname = os.path.join(
+            APP.config['GIT_FOLDER'], project.path)
     orig_repo = pygit2.Repository(parentname)
 
     diff_commits = []
@@ -106,7 +106,7 @@ def request_pull(repo, requestid, username=None):
                 pygit2.GIT_SORT_TIME)
         ]
 
-        repo_commit = repo_obj[request.start_id]
+        repo_commit = repo_obj[request.stop_id]
 
         for commit in repo_obj.walk(
                 request.stop_id, pygit2.GIT_SORT_TIME):
@@ -149,12 +149,13 @@ def request_pull(repo, requestid, username=None):
         repo=repo,
         username=username,
         request=request,
-        repo_admin=is_repo_admin(request.repo),
+        #repo_admin=is_repo_admin(request.repo),
         repo_obj=repo_obj,
         orig_repo=orig_repo,
         diff_commits=diff_commits,
         diffs=diffs,
         html_diffs=html_diffs,
+        forks=spechub.lib.get_forks(SESSION, request.repo),
     )
 
 
