@@ -44,6 +44,8 @@ def request_pulls(repo, username=None):
     if not repo:
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
+
     if status is False or str(status).lower() == 'closed':
         requests = spechub.lib.get_pull_requests(
             SESSION, project_id=repo, status=False)
@@ -58,7 +60,7 @@ def request_pulls(repo, username=None):
         username=username,
         requests=requests,
         status=status,
-        forks=spechub.lib.get_forks(SESSION, repo, user=username),
+        forks=spechub.lib.get_forks(SESSION, project),
     )
 
 
