@@ -101,12 +101,12 @@ def request_pull(repo, requestid, username=None):
     repo_commit = repo_obj[request.stop_id]
     if not repo_obj.is_empty and not orig_repo.is_empty:
         orig_commit = orig_repo[
-            orig_repo.lookup_branch('master').get_object().hex]
+            orig_repo.lookup_branch(request.branch).get_object().hex]
 
         master_commits = [
             commit.oid.hex
             for commit in orig_repo.walk(
-                orig_repo.lookup_branch('master').get_object().hex,
+                orig_repo.lookup_branch(request.branch).get_object().hex,
                 pygit2.GIT_SORT_TIME)
         ]
 
