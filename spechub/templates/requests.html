@@ -24,15 +24,14 @@
   <ul>
     {% for request in requests %}
     <li>
-      #{{ request[1] }}
+      #{{ request.id }}
       <a href="{{ url_for('request_pull', username=username,
-                repo=repo, requestid=request[1]) }}">
-        {{ request[0].title }}
+                repo=repo, requestid=request.id) }}">
+        {{ request.title }}
       </a>
       <span> Opened by
-      <a href="{{ url_for('view_user', username=request[0].user.user) }}">
-      {{request[0].user.user}}
-      </a> on {{ request[0].date_created.strftime('%Y-%m-%d %H:%M') }}</span>
+      {{request.user.user}}
+      on {{ request.date_created.strftime('%Y-%m-%d %H:%M') }}</span>
     </li>
     {% endfor %}
   </ul>
