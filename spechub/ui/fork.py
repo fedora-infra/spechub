@@ -48,10 +48,10 @@ def request_pulls(repo, username=None):
 
     if status is False or str(status).lower() == 'closed':
         requests = spechub.lib.get_pull_requests(
-            SESSION, project_id=repo, status=False)
+            SESSION, project_id=project.id, status=False)
     else:
         requests = spechub.lib.get_pull_requests(
-            SESSION, project_id=repo, status=status)
+            SESSION, project_id=project.id, status=status)
 
     return flask.render_template(
         'requests.html',
