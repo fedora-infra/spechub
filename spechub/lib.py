@@ -212,8 +212,10 @@ def get_forks(session, project, user=None):
     return query.all()
 
 
-def get_or_create_project(session, project_name, project_user):
+def get_or_create_project(session, project_name, project_user=None):
     ''' Get or create the project having with the specified information.
     '''
-
-    return model.Project.get_or_create(session, project_name, project_user)
+    user_id = None
+    if project_user:
+        user_id = model.User.get_or_create(session, project_user).id
+    return model.Project.get_or_create(session, project_name, user_id)
