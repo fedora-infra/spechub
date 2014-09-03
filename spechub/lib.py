@@ -81,9 +81,12 @@ def new_pull_request(
             'No user "%s" found' % user
         )
 
+    parent = get_or_create_project(session, repo)
+    project = get_or_create_project(session, repo, user)
+
     request = model.PullRequest(
-        project_id=repo,
-        project_id_from=repo_from,
+        project_id=parent.id,
+        project_id_from=project.id,
         title=title,
         start_id=start_id,
         stop_id=stop_id,
