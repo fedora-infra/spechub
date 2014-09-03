@@ -21,9 +21,19 @@ Get it running
 * Make sure you have all the dependencies listed in ``requirements.txt``
 
 
-* Create the folder that will receive the forks of the git repos::
+* Create the folder that will receive the git repositories and the forks::
 
-    mkdir forks
+    mkdir {repos,forks}
+
+
+* Put some repositories in the repos folder
+
+    pushd repos
+    git clone git://pkgs.fedoraproject.org/guake.git --bare
+    git clone git://pkgs.fedoraproject.org/kernel.git --bare
+    git clone git://pkgs.fedoraproject.org/fedocal.git --bare
+    git clone git://pkgs.fedoraproject.org/R.git --bare
+    popd
 
 
 * Run it::
