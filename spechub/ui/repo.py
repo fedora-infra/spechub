@@ -41,6 +41,7 @@ def view_repo(repo, username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     cnt = 0
@@ -124,6 +125,7 @@ def view_repo_branch(repo, branchname, username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     if branchname not in repo_obj.listall_branches():
@@ -203,6 +205,7 @@ def view_log(repo, branchname='master', username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     if branchname and branchname not in repo_obj.listall_branches():
@@ -299,6 +302,7 @@ def view_file(repo, identifier, filename, username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     if identifier in repo_obj.listall_branches():
@@ -358,6 +362,7 @@ def view_commit(repo, commitid, username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     try:
@@ -410,6 +415,7 @@ def view_tree(repo, identifier=None, username=None):
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
 
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
     repo_obj = pygit2.Repository(reponame)
 
     branchname = None
@@ -458,6 +464,8 @@ def view_forks(repo, username=None):
 
     if not repo:
         flask.abort(404, 'Project not found')
+
+    project = spechub.lib.get_or_create_project(SESSION, repo, username)
 
     return flask.render_template(
         'forks.html',
