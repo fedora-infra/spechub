@@ -70,23 +70,21 @@ def request_pull(repo, requestid, username=None):
     """ Request pulling the changes from the fork into the project.
     """
 
-    repo = spechub.lib.get_project(SESSION, repo, user=username)
+    reponame = os.path.join(APP.config['GIT_FOLDER'], repo + '.git')
+    if username:
+        reponame = os.path.join(
+            APP.config['FORK_FOLDER'], username, repo + '.git')
 
     if not repo:
         flask.abort(404, 'Project not found')
 
     request = spechub.lib.get_pull_request(
-        SESSION, project_id=repo.id, requestid=requestid)
-    repo = request.repo_from
+        SESSION, project=repo, requestid=requestid)
 
     if not request:
         flask.abort(404, 'Pull-request not found')
 
-    if repo.is_fork:
-        repopath = os.path.join(APP.config['FORK_FOLDER'], repo.path)
-    else:
-        repopath = os.path.join(APP.config['GIT_FOLDER'], repo.path)
-    repo_obj = pygit2.Repository(repopath)
+    repo_obj = pygit2.Repository(reponame)
 
     if repo.parent:
         parentname = os.path.join(APP.config['GIT_FOLDER'], repo.parent.path)
@@ -345,7 +343,7 @@ def fork_project(repo, username=None):
             repo=repo,
             gitfolder=APP.config['GIT_FOLDER'],
             forkfolder=APP.config['FORK_FOLDER'],
-            user=flask.g.fas_user.username)
+            username=flask.g.fas_user.username)
 
         SESSION.commit()
         #generate_gitolite_acls()
