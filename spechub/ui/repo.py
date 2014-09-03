@@ -111,6 +111,7 @@ def view_repo(repo, username=None):
         tree=tree,
         diff_commits=diff_commits,
         forks=spechub.lib.get_forks(SESSION, project),
+        project=project,
     )
 
 
