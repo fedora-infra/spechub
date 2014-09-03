@@ -4,8 +4,8 @@ SpecHub
 :Author: Pierre-Yves Chibon <pingou@pingoured.fr>
 
 
-SpecHub provides a browser interface to the Fedora gits storing the spec file
-and patches for the git repositories of each packages in Fedora.
+SpecHub provides a browser interface to the Fedora git repositories storing the
+spec file and patches of each packages in Fedora.
 
 Homepage: https://github.com/fedora-infra/spechub
 
