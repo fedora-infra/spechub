@@ -74,7 +74,7 @@ def add_pull_request_comment(session, request, commit, row, comment, user):
 def new_pull_request(
         session, repo, repo_from, title, user, stop_id, start_id=None):
     ''' Create a new pull request on the specified repo. '''
-    user_obj = get_user(session, user)
+    user_obj = session.query(model.User).filter(user==user).first()
 
     if not user_obj:
         raise spechub.exceptions.SpecHubException(
