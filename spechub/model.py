@@ -192,7 +192,7 @@ class Project(BASE):
                 parent_id=parent_id)
             session.add(project)
             session.commit()
-        return user
+        return project
 
 
 class PullRequest(BASE):
