@@ -217,6 +217,9 @@ class PullRequest(BASE):
     title = sa.Column(
         sa.Text,
         nullable=False)
+    branch = sa.Column(
+        sa.Text(),
+        nullable=True)
     start_id = sa.Column(
         sa.String(40),
         nullable=True)
