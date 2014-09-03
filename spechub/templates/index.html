@@ -10,7 +10,6 @@
         {% for repo in row %}
             <a class="project_link"
                 href="{{ url_for('view_repo', repo=repo) }}">
-                <img src='{{ url_for("static", filename="fedocal.png") }}' alt="" />
                 <span class="repo_name">{{ repo }}</span>
             </a>
         {% endfor %}
