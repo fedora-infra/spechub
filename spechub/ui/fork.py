@@ -363,38 +363,24 @@ def fork_project(repo, username=None):
     return flask.redirect(flask.url_for('view_repo', repo=repo))
 
 
-@APP.route('/<repo>/request-pull/new',
-           methods=('GET', 'POST'))
-@APP.route('/<repo>/request-pull/new/<commitid>',
-           methods=('GET', 'POST'))
 @APP.route('/fork/<username>/<repo>/request-pull/new',
            methods=('GET', 'POST'))
 @APP.route('/fork/<username>/<repo>/request-pull/new/<commitid>',
            methods=('GET', 'POST'))
 @cla_required
-def new_request_pull(repo, username=None, commitid=None):
+def new_request_pull(repo, username, commitid=None):
     """ Request pulling the changes from the fork into the project.
     """
-    repo = spechub.lib.get_project(SESSION, repo, user=username)
+    reponame = os.path.join(
+        APP.config['FORK_FOLDER'], username, repo + '.git')
+    if not os.path.exists(reponame):
+        flask.abort(404, 'Project not found')
 
-    if not repo:
-        flask.abort(404)
+    parentname = os.path.join(APP.config['GIT_FOLDER'], repo + '.git')
+    if not os.path.exists(parentname):
+        flask.abort(404, 'Fork not found')
 
-    if not is_repo_admin(repo):
-        flask.abort(
-            403,
-            'You are not allowed to create pull-requests for this project')
-
-    if repo.is_fork:
-        repopath = os.path.join(APP.config['FORK_FOLDER'], repo.path)
-    else:
-        repopath = os.path.join(APP.config['GIT_FOLDER'], repo.path)
-    repo_obj = pygit2.Repository(repopath)
-
-    if repo.parent:
-        parentname = os.path.join(APP.config['GIT_FOLDER'], repo.parent.path)
-    else:
-        parentname = os.path.join(APP.config['GIT_FOLDER'], repo.path)
+    repo_obj = pygit2.Repository(reponame)
     orig_repo = pygit2.Repository(parentname)
 
     if commitid is None:
@@ -454,15 +440,13 @@ def new_request_pull(repo, username=None, commitid=None):
             )
         )
 
-    form = spechub.forms.RequestPullForm()
+    form = spechub.ui.forms.RequestPullForm()
     if form.validate_on_submit():
         try:
             if orig_commit:
                 orig_commit = orig_commit.oid.hex
 
             parent = repo
-            if repo.parent:
-                parent = repo.parent
 
             message = spechub.lib.new_pull_request(
                 SESSION,
@@ -476,14 +460,8 @@ def new_request_pull(repo, username=None, commitid=None):
             SESSION.commit()
             flask.flash(message)
 
-            if not parent.is_fork:
-                url = flask.url_for(
-                    'request_pulls', username=None, repo=parent.name)
-            else:
-                url = flask.url_for(
-                    'request_pulls', username=parent.user, repo=parent.name)
-
-            return flask.redirect(url)
+            return flask.redirect(
+                flask.url_for('request_pulls', username=None, repo=parent))
         except spechub.exceptions.SpecHubException, err:
             flask.flash(str(err), 'error')
         except SQLAlchemyError, err:  # pragma: no cover
