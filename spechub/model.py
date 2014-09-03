@@ -174,6 +174,26 @@ class Project(BASE):
             str_name = "%s/%s" % (self.user.user, str_name)
         return str_name
 
+    @classmethod
+    def get_or_create(cls, session, name, user_id=None, parent_id=None):
+        """ Get or create a Project object with the specified information. """
+        project = session.query(
+            cls
+        ).filter(
+            cls.name == name
+        ).filter(
+            cls.user_id == user_id
+        ).first()
+
+        if not project:
+            project = Project(
+                name=name,
+                user_id=user_id,
+                parent_id=parent_id)
+            session.add(project)
+            session.commit()
+        return user
+
 
 class PullRequest(BASE):
     """ Stores the pull requests created on a project.
