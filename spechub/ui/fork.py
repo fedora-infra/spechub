@@ -72,10 +72,11 @@ def request_pull(repo, requestid, username=None):
 
     request = spechub.lib.get_pull_request(
         SESSION, project=repo, requestid=requestid)
-    project = request.repo_from
 
     if not request:
         flask.abort(404, 'Pull-request not found')
+
+    project = request.repo_from
 
     reponame = os.path.join(APP.config['FORK_FOLDER'], project.path)
     if not request.status:
