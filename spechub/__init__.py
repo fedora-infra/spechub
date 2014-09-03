@@ -298,8 +298,13 @@ def auth_login():
     if authenticated():
         return flask.redirect(return_point)
 
+    groups = APP.config['ADMIN_GROUP']
+    if isinstance(groups, basestring):
+        groups = [groups]
+    groups = groups[:]
+    groups.append('provenpackager')
     return FAS.login(
-        return_url=return_point, groups=APP.config['ADMIN_GROUP'])
+        return_url=return_point, groups=groups)
 
 
 @APP.route('/logout/')
