@@ -119,13 +119,13 @@ class User(BASE):
         return user
 
 
-class Fork(BASE):
+class Project(BASE):
     """ Stores the projects.
 
-    Table -- forks
+    Table -- projects
     """
 
-    __tablename__ = 'forks'
+    __tablename__ = 'projects'
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(32), nullable=False, index=True)
@@ -134,11 +134,21 @@ class Fork(BASE):
         sa.ForeignKey('users.id', onupdate='CASCADE'),
         nullable=False,
         index=True)
+    parent_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey('projects.id', onupdate='CASCADE'),
+        nullable=True)
+
     user = relation('User', foreign_keys=[user_id],
-                    remote_side=[User.id], backref='forks')
+                    remote_side=[User.id], backref='projects')
+    parent = relation('Project', remote_side=[id], backref='forks')
 
     date_created = sa.Column(sa.DateTime, nullable=False,
                              default=datetime.datetime.utcnow)
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'user_id'),
+    )
 
     @property
     def path(self):
@@ -177,12 +187,12 @@ class PullRequest(BASE):
     project_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(
-            'forks.id', ondelete='CASCADE', onupdate='CASCADE'),
+            'projects.id', ondelete='CASCADE', onupdate='CASCADE'),
         nullable=False)
     project_id_from = sa.Column(
         sa.Integer,
         sa.ForeignKey(
-            'forks.id', ondelete='CASCADE', onupdate='CASCADE'),
+            'projects.id', ondelete='CASCADE', onupdate='CASCADE'),
         nullable=False)
     title = sa.Column(
         sa.Text,
@@ -204,10 +214,10 @@ class PullRequest(BASE):
                              default=datetime.datetime.utcnow)
 
     repo = relation(
-        'Fork', foreign_keys=[project_id], remote_side=[Fork.id],
+        'Project', foreign_keys=[project_id], remote_side=[Project.id],
         backref='requests')
     repo_from = relation(
-        'Fork', foreign_keys=[project_id_from], remote_side=[Fork.id])
+        'Project', foreign_keys=[project_id_from], remote_side=[Project.id])
     user = relation('User', foreign_keys=[user_id],
                     remote_side=[User.id], backref='pull_requests')
 
