@@ -26,7 +26,7 @@ Get it running
     mkdir {repos,forks}
 
 
-* Put some repositories in the repos folder
+* Put some repositories in the repos folder::
 
     pushd repos
     git clone git://pkgs.fedoraproject.org/guake.git --bare
