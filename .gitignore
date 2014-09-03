@@ -1,6 +1,7 @@
 forks/
 dist/
 build/
+repos/
 *.pyc
 *.swp
 
