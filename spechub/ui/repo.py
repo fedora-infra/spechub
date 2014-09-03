@@ -285,6 +285,7 @@ def view_log(repo, branchname='master', username=None):
         page=page,
         total_page=total_page,
         forks=spechub.lib.get_forks(SESSION, project),
+        project=project,
     )
 
 
