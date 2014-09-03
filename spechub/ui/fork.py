@@ -392,6 +392,10 @@ def new_request_pull(repo, username, commitid=None):
     orig_repo = pygit2.Repository(parentname)
 
     branchname = flask.request.args.get('branch', 'master')
+    branch = repo_obj.lookup_branch(branchname)
+    if not branch:
+        flask.flash('Branch %s does not exist' % branchname, 'error')
+        branchname = 'master'
     if commitid is None:
         commitid = repo_obj.head.target
         if branchname:
