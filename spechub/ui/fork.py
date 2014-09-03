@@ -223,16 +223,17 @@ def pull_request_add_comment(repo, requestid, commit, row, username=None):
 def merge_request_pull(repo, requestid, username=None):
     """ Request pulling the changes from the fork into the project.
     """
-    repo = spechub.lib.get_project(SESSION, repo, user=username)
-
-    if not repo:
-        flask.abort(404, 'Project not found')
-
     request = spechub.lib.get_pull_request(
-        SESSION, project_id=repo.id, requestid=requestid)
+        SESSION, project=repo, requestid=requestid)
+    repo = request.repo_from
 
     if not request:
         flask.abort(404, 'Pull-request not found')
+
+    reponame = os.path.join(APP.config['FORK_FOLDER'], repo.path)
+
+    if not os.path.exists(reponame):
+        flask.abort(404, 'Project not found')
 
     if not is_repo_admin(repo):
         flask.abort(
