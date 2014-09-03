@@ -190,24 +190,17 @@ def close_pull_request(session, request):
     session.flush()
 
 
-def get_forks(session, project, user=None):
+def get_forks(session, project):
     ''' Retrieve the forks of a project
     '''
 
     query = session.query(
-        model.Fork
+        model.Project
     ).filter(
-        model.Fork.name == project
+        model.Project.parent_id == project.id
     ).order_by(
-        model.Fork.date_created
+        model.Project.date_created
     )
-
-    if user:
-        query = query.filter(
-            model.Fork.user_id == model.User.id
-        ).filter(
-            model.User.user == None
-        )
 
     return query.all()
 
