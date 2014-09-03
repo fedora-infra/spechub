@@ -78,6 +78,9 @@ def request_pull(repo, requestid, username=None):
         flask.abort(404, 'Pull-request not found')
 
     reponame = os.path.join(APP.config['FORK_FOLDER'], project.path)
+    if not request.status:
+        project = request.repo
+        reponame = os.path.join(APP.config['GIT_FOLDER'], project.path)
 
     if not os.path.exists(reponame):
         flask.abort(404, 'Project not found')
@@ -110,7 +113,9 @@ def request_pull(repo, requestid, username=None):
 
         for commit in repo_obj.walk(
                 request.stop_id, pygit2.GIT_SORT_TIME):
-            if commit.oid.hex in master_commits:
+            if request.status and commit.oid.hex in master_commits:
+                break
+            elif not request.status and commit.oid.hex == request.start_id:
                 break
             diff_commits.append(commit)
             diffs.append(
