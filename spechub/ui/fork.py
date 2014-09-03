@@ -391,9 +391,9 @@ def new_request_pull(repo, username, commitid=None):
     repo_obj = pygit2.Repository(reponame)
     orig_repo = pygit2.Repository(parentname)
 
+    branchname = flask.request.args.get('branch', 'master')
     if commitid is None:
         commitid = repo_obj.head.target
-        branchname = flask.request.args.get('branch', None)
         if branchname:
             branch = repo_obj.lookup_branch(branchname)
             commitid = branch.get_object().hex
@@ -402,12 +402,12 @@ def new_request_pull(repo, username, commitid=None):
     diffs = []
     if not repo_obj.is_empty and not orig_repo.is_empty:
         orig_commit = orig_repo[
-            orig_repo.lookup_branch('master').get_object().hex]
+            orig_repo.lookup_branch(branchname).get_object().hex]
 
         master_commits = [
             commit.oid.hex
             for commit in orig_repo.walk(
-                orig_repo.lookup_branch('master').get_object().hex,
+                orig_repo.lookup_branch(branchname).get_object().hex,
                 pygit2.GIT_SORT_TIME)
         ]
 
