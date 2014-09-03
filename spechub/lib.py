@@ -96,26 +96,28 @@ def new_pull_request(
     return 'Request created'
 
 
-def fork_project(session, user, repo, gitfolder, forkfolder):
+def fork_project(session, username, repo, gitfolder, forkfolder):
     ''' Fork a given project into the user's forks. '''
 
     reponame = os.path.join(gitfolder, repo + '.git')
-    forkreponame = '%s.git' % os.path.join(forkfolder, user, repo)
+    forkreponame = '%s.git' % os.path.join(forkfolder, username, repo)
 
     if os.path.exists(forkreponame):
         raise spechub.exceptions.RepoExistsException(
-            'Repo "%s/%s" already exists' % (user, repo))
+            'Repo "%s/%s" already exists' % (username, repo))
 
-    if not user:
+    if not username:
         raise spechub.exceptions.SpecHubException(
             'No user "%s" found' % user
         )
 
-    user = model.User.get_or_create(session, user)
+    parent = get_or_create_project(session, repo)
+    user = model.User.get_or_create(session, username)
 
-    project = model.Fork(
+    project = model.Project(
         name=repo,
         user=user,
+        parent_id=parent.id,
     )
     session.add(project)
     # Make sure we won't have SQLAlchemy error before we create the repo
@@ -123,7 +125,7 @@ def fork_project(session, user, repo, gitfolder, forkfolder):
 
     pygit2.clone_repository(reponame, forkreponame, bare=True)
 
-    return 'Repo "%s" cloned to "%s/%s"' % (repo, user, repo)
+    return 'Repo "%s" cloned to "%s/%s"' % (repo, username, repo)
 
 
 def get_pull_requests(
