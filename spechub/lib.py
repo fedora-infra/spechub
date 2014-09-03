@@ -170,14 +170,17 @@ def get_pull_request(session, requestid, project=None):
     query = session.query(
         model.PullRequest
     ).filter(
-        model.PullRequest.project_id == model.Fork.id
-    ).filter(
         model.PullRequest.id == requestid
-    ).filter(
-        model.Fork.name == project
     ).order_by(
         model.PullRequest.id
     )
+
+    if project:
+        query = query.filter(
+            model.Project.name == project
+        ).filter(
+            model.PullRequest.project_id == model.Project.id
+        )
 
     return query.first()
 
