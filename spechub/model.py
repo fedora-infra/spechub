@@ -132,7 +132,7 @@ class Project(BASE):
     user_id = sa.Column(
         sa.Integer,
         sa.ForeignKey('users.id', onupdate='CASCADE'),
-        nullable=False,
+        nullable=True,
         index=True)
     parent_id = sa.Column(
         sa.Integer,
