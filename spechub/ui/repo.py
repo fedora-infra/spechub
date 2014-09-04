@@ -188,6 +188,7 @@ def view_repo_branch(repo, branchname, username=None):
         tree=sorted(last_commits[0].tree, key=lambda x: x.filemode),
         diff_commits=diff_commits,
         forks=spechub.lib.get_forks(SESSION, project),
+        project=project,
     )
 
 
