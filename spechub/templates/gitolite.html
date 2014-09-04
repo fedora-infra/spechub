@@ -1,0 +1,5 @@
+{% for repo in forks %}
+repo forks/{{ repo.name}}
+  RW+ = {{ repo.user.user }}
+
+{% endfor %}
