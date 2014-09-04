@@ -145,13 +145,19 @@
         <th>Git URLs</th>
         <td></td>
         <td></td>
-        <td></td>
       </tr>
       <tr>
         <td>Project</td>
         <td>:</td>
         <td>
           {{ config.get('GIT_URL_GIT') }}/{% if project.is_fork %}forks/{% endif %}{{ project.fullname }}.git
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+            {{ config.get('GIT_URL_SSH') }}/{% if project.is_fork %}forks/{% endif %}{{ project.fullname }}.git
         </td>
       </tr>
     </table>
