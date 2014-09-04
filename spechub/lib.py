@@ -72,7 +72,8 @@ def add_pull_request_comment(session, request, commit, row, comment, user):
 
 
 def new_pull_request(
-        session, repo, repo_from, title, user, stop_id, start_id=None):
+        session, repo, repo_from, branch, title, user, stop_id,
+        start_id=None):
     ''' Create a new pull request on the specified repo. '''
     user_obj = session.query(model.User).filter(user==user).first()
 
@@ -87,6 +88,7 @@ def new_pull_request(
     request = model.PullRequest(
         project_id=parent.id,
         project_id_from=project.id,
+        branch=branch,
         title=title,
         start_id=start_id,
         stop_id=stop_id,
