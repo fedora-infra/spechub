@@ -235,6 +235,21 @@ def get_forks(session, project):
     return query.all()
 
 
+def get_all_forks(session):
+    ''' Retrieve all the forks
+    '''
+
+    query = session.query(
+        model.Project
+    ).filter(
+        model.Project.parent_id != None
+    ).order_by(
+        model.Project.id
+    )
+
+    return query.all()
+
+
 def get_or_create_project(session, project_name, project_user=None):
     ''' Get or create the project having with the specified information.
     '''
