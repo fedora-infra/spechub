@@ -61,7 +61,7 @@ def view_repo(repo, username=None):
         name, ext = os.path.splitext(i.name)
         if name == 'README':
             content = repo_obj[i.oid].data
-            readme = progit.doc_utils.convert_readme(content, ext)
+            readme = spechub.doc_utils.convert_readme(content, ext)
 
     diff_commits = []
     if username:
