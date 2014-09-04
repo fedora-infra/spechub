@@ -85,6 +85,13 @@ def new_pull_request(
     parent = get_or_create_project(session, repo)
     project = get_or_create_project(session, repo, user)
 
+    pr = check_pull_request(
+        session, project.id, branch, start_id, stop_id)
+    if pr:
+        raise spechub.exceptions.SpecHubException(
+            'There is already a pull-request for these changes'
+        )
+
     request = model.PullRequest(
         project_id=parent.id,
         project_id_from=project.id,
