@@ -244,6 +244,11 @@ class PullRequest(BASE):
     user = relation('User', foreign_keys=[user_id],
                     remote_side=[User.id], backref='pull_requests')
 
+    __table_args__ = (
+        sa.UniqueConstraint(
+            'project_id_from', 'branch', 'start_id', 'stop_id'),
+    )
+
     def __repr__(self):
         return 'PullRequest(%s, project:%s, user:%s, title:%s)' % (
             self.id, self.repo.name, self.user.user, self.title
