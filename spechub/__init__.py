@@ -245,9 +245,7 @@ def format_loc(loc, commit=None, prequest=None):
         if line == '</pre></div>':
             continue
         if line.startswith('<div'):
-            line = line.split('<pre style="line-height: 125%">')
-            if len(line) >= 2:
-                line = line[1]
+            line = line.split('<pre', 1)[1].split('>', 1)[1]
         output.append('<td class="cell2"><pre>%s</pre></td>' % line)
         output.append('</tr>')
 
