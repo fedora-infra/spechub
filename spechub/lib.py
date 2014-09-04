@@ -192,6 +192,27 @@ def close_pull_request(session, request):
     session.flush()
 
 
+def check_pull_request(session, project_id_from, branch, start_id, stop_id):
+    ''' Check if a pull request exists with to the information specified
+    '''
+
+    query = session.query(
+        model.PullRequest
+    ).filter(
+        model.PullRequest.project_id_from == project_id_from
+    ).filter(
+        model.PullRequest.branch == branch
+    ).filter(
+        model.PullRequest.start_id == start_id
+    ).filter(
+        model.PullRequest.stop_id == stop_id
+    ).order_by(
+        model.PullRequest.id
+    )
+
+    return query.first()
+
+
 def get_forks(session, project):
     ''' Retrieve the forks of a project
     '''
