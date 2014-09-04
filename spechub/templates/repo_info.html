@@ -121,7 +121,7 @@
         </a>
         {{ commit.message.split('\n')[0] }}
         {% if diff_commits and commit.oid.hex in diff_commits %}
-        <span class="error" title="Commit not in the main repo">*</span>
+        <span class="error" title="Commit not in the master branch">*</span>
         {% if authenticated %}
         (<a href="{{ url_for('new_request_pull',
                     username=username, repo=repo, commitid=commit.oid.hex) }}"
