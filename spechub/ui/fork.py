@@ -465,6 +465,7 @@ def new_request_pull(repo, username, commitid=None):
                 SESSION,
                 repo=parent,
                 repo_from=repo,
+                branch=branchname,
                 title=form.title.data,
                 start_id=orig_commit,
                 stop_id=repo_commit.oid.hex,
