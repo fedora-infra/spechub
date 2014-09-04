@@ -31,7 +31,7 @@ EMAIL_ERROR = 'pingou@pingoured.fr'
 APP_URL = 'https://fedorahosted.org/spechub/'
 
 # The URL to use to clone the git repositories.
-GIT_URL_SSH = 'git@pkgs.fedoraproject.org'
+GIT_URL_SSH = 'ssh://<fas_user>@pkgs.fedoraproject.org'
 GIT_URL_GIT = 'git://pkgs.fedoraproject.org'
 
 
