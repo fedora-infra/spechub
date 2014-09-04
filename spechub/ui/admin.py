@@ -12,6 +12,7 @@ from functools import wraps
 
 import flask
 
+import spechub.lib
 from spechub import (APP, SESSION, LOG, cla_required, authenticated,
                     is_admin)
 
@@ -43,4 +44,19 @@ def admin_index():
 
     return flask.render_template(
         'admin_index.html',
+    )
+
+
+@APP.route('/admin/gitolite/conf')
+def gitolite_conf():
+    """ Display the configuration file for gitolite
+    """
+    forks = spechub.lib.get_all_forks(SESSION)
+
+    return flask.Response(
+        flask.render_template(
+            'gitolite.html',
+            forks=forks,
+        ),
+        mimetype="text/plain",
     )
