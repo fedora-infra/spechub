@@ -17,7 +17,7 @@ from spechub import (APP, SESSION, LOG, cla_required, authenticated,
 
 
 def admin_required(function):
-    """ Flask decorator to retrict access to admins of progit.
+    """ Flask decorator to retrict access to admins of spechub.
     """
     @wraps(function)
     def decorated_function(*args, **kwargs):

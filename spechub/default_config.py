@@ -21,7 +21,7 @@ SECRET_KEY = '<insert here your own key>'
 # url to the database server:
 DB_URL = 'sqlite:////var/tmp/spechub.sqlite'
 
-# The FAS group in which the admin of progit are
+# The FAS group in which the admin of spechub are
 ADMIN_GROUP = 'sysadmin-main'
 
 # The email address to which the flask.log will send the errors (tracebacks)
