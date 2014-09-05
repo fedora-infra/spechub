@@ -100,12 +100,11 @@
     {% else %}
     <h3>Last 10 commits</h3>
     {% endif %}
-    {% if diff_commits and authenticated %}
+    {% if diff_commits and authenticated and repo.is_fork%}
     <span id="request_pull">
         {% if branchname %}
         <a href="{{ url_for('new_request_pull',
-                    username=username, repo=repo,
-                    branch=branchname) }}">Request pull</a>
+                    username=username, repo=repo) }}?branch={{branchname}}">Request pull</a>
         {% else %}
             <a href="{{ url_for('new_request_pull',
                     username=username, repo=repo) }}">Request pull</a>
@@ -122,7 +121,7 @@
         {{ commit.message.split('\n')[0] }}
         {% if diff_commits and commit.oid.hex in diff_commits %}
         <span class="error" title="Commit not in the master branch">*</span>
-        {% if authenticated %}
+        {% if authenticated and repo.is_fork%}
         (<a href="{{ url_for('new_request_pull',
                     username=username, repo=repo, commitid=commit.oid.hex) }}"
                 >Request pull</a>)
