@@ -172,19 +172,19 @@ def request_pull(repo, requestid, username=None):
 def pull_request_add_comment(repo, requestid, commit, row, username=None):
     """ Add a comment to a commit in a pull-request.
     """
-    repo = spechub.lib.get_project(SESSION, repo, user=username)
+    repo = spechub.lib.get_or_create_project(SESSION, repo, username)
 
     if not repo:
         flask.abort(404, 'Project not found')
 
     request = spechub.lib.get_pull_request(
-        SESSION, project_id=repo.id, requestid=requestid)
+        SESSION, project=repo.name, requestid=requestid)
     repo = request.repo_from
 
     if not request:
         flask.abort(404, 'Pull-request not found')
 
-    form = spechub.forms.AddPullRequestCommentForm()
+    form = spechub.ui.forms.AddPullRequestCommentForm()
     form.commit.data = commit
     form.requestid.data = requestid
     form.row.data = row
@@ -215,7 +215,7 @@ def pull_request_add_comment(repo, requestid, commit, row, username=None):
         'pull_request_comment.html',
         select='requests',
         requestid=requestid,
-        repo=repo,
+        repo=repo.name,
         username=username,
         commit=commit,
         row=row,
