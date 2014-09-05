@@ -140,6 +140,27 @@ def fork_project(session, username, repo, gitfolder, forkfolder):
     return 'Repo "%s" cloned to "%s/%s"' % (repo, username, repo)
 
 
+def delete_fork(session, fork, forkfolder):
+    ''' Delete a specified fork from the DB and the system. '''
+    forkreponame = os.path.join(forkfolder, fork.path)
+
+    if not os.path.exists(forkreponame):
+        raise spechub.exceptions.RepoExistsException(
+            'Repo "%s" could not be found' % fork.fullname)
+
+    for req in fork.requests:
+        session.delete(req)
+    session.delete(fork)
+
+    # Delete from the DB
+    session.commit()
+
+    # Delete from the FS
+    shutil.rmtree(forkreponame)
+
+    return 'Fork %s deleted' % fork.fullname
+
+
 def get_pull_requests(
         session, project_id=None, project_id_from=None, status=None):
     ''' Retrieve the specified issue
