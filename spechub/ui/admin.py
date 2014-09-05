@@ -60,3 +60,32 @@ def gitolite_conf():
         ),
         mimetype="text/plain",
     )
+
+
+@APP.route('/admin/delete', methods=["POST"])
+@admin_required
+def admin_delete_project():
+    """ Delete a specified project.
+    """
+
+    forkname = flask.request.form.get('project', None)
+
+    if not forkname or not '/' in forkname:
+        flask.flash('Invalid format, should be <user>/<project>', 'error')
+        return flask.redirect(flask.url_for('admin_index'))
+
+    user, project = forkname.split('/', 1)
+
+    fork = spechub.lib.get_fork(SESSION, user, project)
+    if not fork:
+        flask.flash('Could not find fork %s' % forkname, 'error')
+        return flask.redirect(flask.url_for('admin_index'))
+
+    try:
+        output = spechub.lib.delete_fork(
+            SESSION, fork, APP.config['FORK_FOLDER'])
+        flask.flash(output)
+    except spechub.exceptions.SpecHubException, err:
+        flask.flash(str(err), 'error')
+
+    return flask.redirect(flask.url_for('admin_index'))
