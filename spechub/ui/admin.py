@@ -41,9 +41,11 @@ def admin_required(function):
 def admin_index():
     """ Front page of the admin section of the application.
     """
+    forks = spechub.lib.get_all_forks(SESSION)
 
     return flask.render_template(
         'admin_index.html',
+        forks=forks,
     )
 
 
