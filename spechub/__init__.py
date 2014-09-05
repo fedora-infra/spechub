@@ -254,13 +254,11 @@ def format_loc(loc, commit=None, prequest=None):
                 output.append(
                     '<tr><td></td>'
                     '<td colspan="2"><table style="width:100%%"><tr>'
-                    '<td><a href="%(url)s">%(user)s</a></td><td class="right">%(date)s</td>'
+                    '<td>%(user)s</td><td class="right">%(date)s</td>'
                     '</tr>'
                     '<tr><td colspan="2" class="pr_comment">%(comment)s</td></tr>'
                     '</table></td></tr>' % (
                         {
-                            'url': flask.url_for(
-                                'view_user', username=comment.user.user),
                             'user': comment.user.user,
                             'date': comment.date_created.strftime(
                                 '%b %d %Y %H:%M:%S'),
