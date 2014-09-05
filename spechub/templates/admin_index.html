@@ -13,7 +13,8 @@
   <tr>
     <th>Delete Fork</th>
     <td>
-      <input name="project" title="Fork to delete: ie <user>/<project>"/>
+      <input id="forkname" name="project"
+        title="Fork to delete: ie <user>/<project>"/>
     </td>
     <td>
       <button type="submit">Delete</button>
@@ -22,4 +23,23 @@
 </table>
 </form>
 
+{% endblock %}
+
+
+{% block jscripts %}
+{{ super() }}
+
+<script type="text/javascript">
+ $(function(){
+    var availableForks = [
+      {% for fork in forks %}
+      "{{ fork.fullname }}",
+      {% endfor %}
+    ];
+    $( "#forkname" ).autocomplete({
+      source: availableForks
+    });
+ });
+
+</script>
 {% endblock %}
