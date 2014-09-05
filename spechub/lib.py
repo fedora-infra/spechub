@@ -220,6 +220,27 @@ def check_pull_request(session, project_id_from, branch, start_id, stop_id):
     return query.first()
 
 
+def get_fork(session, user, project):
+    ''' Retrieve a specified fork
+    '''
+
+    query = session.query(
+        model.Project
+    ).filter(
+        model.Project.name == project
+    ).filter(
+        model.Project.parent_id != None
+    ).filter(
+        model.Project.user_id == model.User.id
+    ).filter(
+        model.User.user == user
+    ).order_by(
+        model.Project.date_created
+    )
+
+    return query.first()
+
+
 def get_forks(session, project):
     ''' Retrieve the forks of a project
     '''
