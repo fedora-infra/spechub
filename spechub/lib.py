@@ -48,9 +48,7 @@ def create_session(db_url, debug=False, pool_recycle=3600):
 
 def add_pull_request_comment(session, request, commit, row, comment, user):
     ''' Add a comment to a pull-request. '''
-    user_obj = get_user(session, user)
-    if not user_obj:
-        user_obj = get_user_by_email(session, user)
+    user_obj = session.query(model.User).filter(user==user).first()
 
     if not user_obj:
         raise spechub.exceptions.SpecHubException(
